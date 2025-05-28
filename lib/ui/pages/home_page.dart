@@ -7,13 +7,12 @@ import '../../services/task_service.dart';
 import '../../services/category_service.dart';
 import '../../services/isar_service.dart';
 
-// 🧩 Import do widget de item de tarefa
+// 🧩 Imports dos widgets
+import '../widgets/main_drawer.dart';
 import '../widgets/task_item_widget.dart';
 
-// 📝 Import das páginas
+// 📝 Imports das páginas
 import 'task_form_page.dart';
-import 'category_page.dart';
-import 'backup_page.dart';
 
 /// Página principal do app UnoList.
 class HomePage extends StatefulWidget {
@@ -95,61 +94,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
 
-      // 🚪 Drawer de navegação
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'UnoList Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.list),
-              title: const Text('Tasks'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder),
-              title: const Text('Categories'),
-              onTap: () async {
-                Navigator.pop(context);
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CategoryPage(),
-                  ),
-                );
-                _loadData();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.backup),
-              title: const Text('Backup & Restore'),
-              onTap: () async {
-                Navigator.pop(context);
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BackupPage(),
-                  ),
-                );
-                _loadData();
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const MainDrawer(), // 🚪 Drawer modularizado
 
       body: SafeArea(
         child: Padding(
