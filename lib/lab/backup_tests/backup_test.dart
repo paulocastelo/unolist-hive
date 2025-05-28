@@ -1,17 +1,24 @@
 import 'dart:io';
 
+import 'package:isar/isar.dart';
 import '../../services/isar_service.dart';
 import '../../services/backup_service.dart';
 
+/// 🧪 Teste de Backup e Restore (Exportação e Importação)
 Future<void> backupTest() async {
   print('💾 Iniciando testes de Backup e Restore');
 
-  final isarService = IsarService();
-  final backupService = BackupService(isarService);
+  // 🔥 Inicializa o banco
+  final isar = await IsarService().db;
 
-  final file = await backupService.exportData();
+  // 🔗 Inicializa o serviço de backup
+  final backupService = BackupService(isar);
+
+  // 💾 Exporta os dados
+  final file = await backupService.exportAllData();
   print('💾 Backup salvo em: ${file.path}');
 
+  // 🔄 Importa o backup
   await backupService.importData(file);
   print('🔄 Backup restaurado com sucesso.');
 

@@ -10,11 +10,12 @@ import '../../services/isar_service.dart';
 // 🧩 Import do widget de item de tarefa
 import '../widgets/task_item_widget.dart';
 
-// 📝 Import da página de criação/edição de tarefa
+// 📝 Import das páginas
 import 'task_form_page.dart';
+import 'category_page.dart';
+import 'backup_page.dart';
 
 /// Página principal do app UnoList.
-/// Tela responsável por listar as tarefas, aplicar filtros, buscar e navegar para outras telas.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -22,38 +23,34 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-/// Estado da HomePage, responsável por controlar os dados,
-/// filtros, buscas e atualizações da interface.
 class _HomePageState extends State<HomePage> {
-  // 🛠️ Serviços que acessam o banco de dados (via Isar)
+  // 🛠️ Serviços
   late final TaskService _taskService;
   late final CategoryService _categoryService;
 
-  // 📦 Estado da lista de tarefas e categorias
+  // 📦 Dados
   List<Task> tasks = [];
   List<Category> categories = [];
 
-  // 🎯 Estado dos filtros e busca
-  String selectedFilter = 'All'; // Filtro atual
-  String searchQuery = '';       // Termo de busca
+  // 🎯 Filtros
+  String selectedFilter = 'All';
+  String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _initializeServices(); // 🚀 Inicializa os serviços e carrega os dados
+    _initializeServices();
   }
 
-  /// 🚀 Inicializa os serviços Task e Category com o banco Isar
+  /// 🔗 Inicializa os serviços
   Future<void> _initializeServices() async {
     final isar = await IsarService().db;
-
     _taskService = TaskService(isar);
     _categoryService = CategoryService(isar);
-
     await _loadData();
   }
 
-  /// 🔄 Carrega tarefas e categorias do banco de dados
+  /// 🔄 Carrega tarefas e categorias
   Future<void> _loadData() async {
     final loadedTasks = await _taskService.getAllTasks();
     final loadedCategories = await _categoryService.getAllCategories();
@@ -64,13 +61,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  /// 🔎 Obtém o nome da categoria pelo ID
+  /// 🔎 Pega o nome da categoria
   String getCategoryName(int? categoryId) {
     final category = categories.firstWhere(
           (cat) => cat.id == categoryId,
       orElse: () => Category(
         name: 'Uncategorized',
-        color: 0xFF9E9E9E, // Cinza padrão
+        color: 0xFF9E9E9E,
         createdAt: DateTime.now(),
       ),
     );
@@ -79,58 +76,97 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🧠 Aplica filtro e busca na lista de tarefas
     final filteredTasks = tasks.where((task) {
-      final matchesSearch = task.title
-          .toLowerCase()
-          .contains(searchQuery.toLowerCase());
-
+      final matchesSearch = task.title.toLowerCase().contains(searchQuery.toLowerCase());
       final matchesFilter = selectedFilter == 'All' ||
           getCategoryName(task.categoryId) == selectedFilter;
-
       return matchesSearch && matchesFilter;
     }).toList();
 
     return Scaffold(
-      // 🧭 AppBar superior
       appBar: AppBar(
         title: const Text('UnoList'),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadData, // 🔄 Atualiza a lista manualmente
+            onPressed: _loadData,
           ),
         ],
       ),
 
-      // 🏗️ Corpo da página
+      // 🚪 Drawer de navegação
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'UnoList Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.list),
+              title: const Text('Tasks'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.folder),
+              title: const Text('Categories'),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CategoryPage(),
+                  ),
+                );
+                _loadData();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.backup),
+              title: const Text('Backup & Restore'),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BackupPage(),
+                  ),
+                );
+                _loadData();
+              },
+            ),
+          ],
+        ),
+      ),
+
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Espaçamento geral
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔍 Barra de busca
               _buildSearchBar(),
-
               const SizedBox(height: 16),
-
-              // 🏷️ Filtros de categorias
               _buildFilterChips(),
-
               const SizedBox(height: 16),
-
-              // 📋 Lista de tarefas
-              Expanded(
-                child: _buildTaskList(filteredTasks),
-              ),
+              Expanded(child: _buildTaskList(filteredTasks)),
             ],
           ),
         ),
       ),
 
-      // ➕ Botão flutuante para adicionar nova tarefa
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
@@ -139,19 +175,19 @@ class _HomePageState extends State<HomePage> {
               builder: (context) => const TaskFormPage(),
             ),
           );
-          _loadData(); // 🔄 Atualiza após voltar da TaskFormPage
+          _loadData();
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  /// 🔍 Widget da barra de busca
+  /// 🔍 Barra de busca
   Widget _buildSearchBar() {
     return TextField(
       decoration: const InputDecoration(
-        hintText: 'Search', // Texto de dica
-        prefixIcon: Icon(Icons.search), // Ícone de lupa
+        hintText: 'Search',
+        prefixIcon: Icon(Icons.search),
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -166,16 +202,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 🏷️ Widget dos filtros de categoria
+  /// 🏷️ Filtros de categoria
   Widget _buildFilterChips() {
-    // Monta a lista de filtros: "All" + nomes das categorias
     final filters = ['All', ...categories.map((c) => c.name).toList()];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: filters.map((filter) {
-          final bool isSelected = selectedFilter == filter;
+          final isSelected = selectedFilter == filter;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -200,7 +235,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 📋 Widget da lista de tarefas
+  /// 📋 Lista de tarefas
   Widget _buildTaskList(List<Task> filteredTasks) {
     if (filteredTasks.isEmpty) {
       return const Center(
@@ -229,9 +264,14 @@ class _HomePageState extends State<HomePage> {
             });
             await _taskService.updateTask(task);
           },
-          onTap: () {
-            // 🚧 Aqui futuramente abrirá a edição da tarefa.
-            // Poderia navegar para TaskFormPage passando os dados da task.
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskFormPage(task: task),
+              ),
+            );
+            _loadData();
           },
         );
       },

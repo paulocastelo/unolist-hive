@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 
 // 📦 Imports dos models e serviços
 import '../../models/category.dart';
@@ -10,7 +11,9 @@ import '../../services/isar_service.dart';
 /// Página de criação e edição de tarefas.
 /// Permite cadastrar título, descrição, categoria, data e status da tarefa.
 class TaskFormPage extends StatefulWidget {
-  const TaskFormPage({Key? key}) : super(key: key);
+  final Task? task;
+
+  const TaskFormPage({Key? key, this.task}) : super(key: key);
 
   @override
   State<TaskFormPage> createState() => _TaskFormPageState();
@@ -26,15 +29,15 @@ class _TaskFormPageState extends State<TaskFormPage> {
   final _descriptionController = TextEditingController();
 
   // 📦 Estado dos campos do formulário
-  List<Category> categories = []; // Lista de categorias disponíveis
-  Category? selectedCategory;     // Categoria selecionada
-  DateTime? selectedDate;         // Data selecionada
-  bool isCompleted = false;       // Status da tarefa (concluído ou não)
+  List<Category> categories = [];
+  Category? selectedCategory;
+  DateTime? selectedDate;
+  bool isCompleted = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeServices(); // 🚀 Inicializa os serviços e carrega as categorias
+    _initializeServices();
   }
 
   /// 🚀 Inicializa os serviços e carrega as categorias do banco
@@ -45,6 +48,17 @@ class _TaskFormPageState extends State<TaskFormPage> {
     _categoryService = CategoryService(isar);
 
     await _loadCategories();
+
+    // 🧠 Se for edição, preencher os campos
+    if (widget.task != null) {
+      final task = widget.task!;
+      _titleController.text = task.title;
+      _descriptionController.text = task.description ?? '';
+      selectedCategory =
+          categories.firstWhereOrNull((c) => c.id == task.categoryId);
+      selectedDate = task.dueDate;
+      isCompleted = task.isCompleted;
+    }
   }
 
   /// 🔽 Carrega categorias do banco de dados
@@ -71,9 +85,8 @@ class _TaskFormPageState extends State<TaskFormPage> {
     }
   }
 
-  /// 💾 Salva a tarefa no banco
+  /// 💾 Salva a tarefa no banco (criar ou editar)
   Future<void> _saveTask() async {
-    // 🔍 Validação simples: título é obrigatório
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Title is required')),
@@ -81,26 +94,65 @@ class _TaskFormPageState extends State<TaskFormPage> {
       return;
     }
 
-    // 🏗️ Cria o objeto da tarefa com os dados preenchidos
-    final newTask = Task.create(
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
-      dueDate: selectedDate,
-      priority: 'Média', // 🔥 Definido como padrão (pode ser dinâmico no futuro)
-      categoryId: selectedCategory?.id,
-    )
-      ..isCompleted = isCompleted; // ✅ Status (permitindo salvar como concluído)
+    if (widget.task == null) {
+      // ➕ Criação
+      final newTask = Task.create(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty
+            ? null
+            : _descriptionController.text.trim(),
+        dueDate: selectedDate,
+        categoryId: selectedCategory?.id,
+        priority: 'Média',
+      )..isCompleted = isCompleted;
 
-    // 💾 Salva no banco
-    await _taskService.addTask(newTask);
+      await _taskService.addTask(newTask);
+    } else {
+      // ✏️ Edição
+      final updated = widget.task!
+        ..title = _titleController.text.trim()
+        ..description = _descriptionController.text.trim().isEmpty
+            ? null
+            : _descriptionController.text.trim()
+        ..categoryId = selectedCategory?.id
+        ..dueDate = selectedDate
+        ..isCompleted = isCompleted;
 
-    // 🔙 Volta para a tela anterior
+      await _taskService.updateTask(updated);
+    }
+
     Navigator.pop(context);
+  }
+
+  /// 🗑️ Confirmação e deleção da tarefa
+  Future<void> _confirmDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content:
+        const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _taskService.deleteTask(widget.task!.id);
+      Navigator.pop(context);
+    }
   }
 
   @override
   void dispose() {
-    // 🧹 Libera os controladores de texto
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -109,9 +161,17 @@ class _TaskFormPageState extends State<TaskFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔵 AppBar superior
+      // 🔵 AppBar dinâmica com botão de deletar se for edição
       appBar: AppBar(
-        title: const Text('New Task'),
+        title: Text(widget.task == null ? 'New Task' : 'Edit Task'),
+        actions: widget.task != null
+            ? [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _confirmDelete,
+          ),
+        ]
+            : null,
       ),
 
       // 🏗️ Corpo da página

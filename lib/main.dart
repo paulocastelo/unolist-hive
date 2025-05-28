@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unolist/ui/pages/home_page.dart';
 
 void main() {
   runApp(const UnoListApp());
@@ -13,26 +14,10 @@ class UnoListApp extends StatelessWidget {
       title: 'UnoList',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-/// 🔥 Tela inicial temporária para estruturação do projeto
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('UnoList'),
-      ),
-      body: const Center(
-        child: Text('🚀 Bem-vindo ao UnoList!'),
-      ),
+      home: const HomePage(), //<-- The name 'HomePage' isn't a class.
     );
   }
 }

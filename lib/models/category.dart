@@ -2,21 +2,15 @@ import 'package:isar/isar.dart';
 
 part 'category.g.dart';
 
-@Collection()
+@collection
 class Category {
-  // 🔑 ID gerado automaticamente pelo Isar
   Id id = Isar.autoIncrement;
 
-  // 🏷️ Nome da categoria (ex.: Trabalho, Estudos)
   late String name;
-
-  // 🎨 Cor da categoria em formato inteiro ARGB
   late int color;
-
-  // 📅 Data de criação (obrigatória)
   late DateTime createdAt;
 
-  // 🚀 Construtor principal (exigido pelo Isar)
+  /// 🚀 Construtor principal
   Category({
     this.id = Isar.autoIncrement,
     required this.name,
@@ -24,7 +18,7 @@ class Category {
     required this.createdAt,
   });
 
-  // 🛠️ Factory para facilitar a criação
+  /// 🏗️ Fábrica simplificada
   factory Category.create({
     required String name,
     required int color,
@@ -33,6 +27,26 @@ class Category {
       name: name,
       color: color,
       createdAt: DateTime.now(),
+    );
+  }
+
+  /// 🔄 Serialização → JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'color': color,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  /// 🔄 Desserialização ← JSON
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['id'] ?? Isar.autoIncrement,
+      name: json['name'],
+      color: json['color'],
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 }

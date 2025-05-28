@@ -1,147 +1,185 @@
 # 📝 UnoList
 
-UnoList é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Isar Database** e interface simples, intuitiva e leve.
-
-O projeto foi pensado para ser minimalista, funcional e com foco total em produtividade, permitindo ao usuário:
-
-- ✅ Organizar tarefas.
-- ✅ Criar categorias.
-- ✅ Filtrar, concluir e gerenciar tarefas.
-- ✅ Realizar backup e restauração dos dados localmente (arquivo JSON).
+UnoList é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Isar Database**, suporte total a **backup em JSON**, restauração, e uma interface leve e funcional.
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Funcionalidades Principais
 
-- **Flutter** — UI e lógica
-- **Dart** — Linguagem principal
-- **Isar Database** — Banco de dados local NoSQL ultra rápido
-- **path_provider** — Localização dos diretórios no dispositivo
-- **dart:convert / dart:io** — Manipulação de arquivos e JSON (Backup/Restore)
+- ✅ Criar, editar, excluir e concluir tarefas.
+- ✅ Gerenciar categorias com seleção de cores.
+- ✅ Aplicar filtros por categorias e busca textual.
+- ✅ Backup e restauração dos dados via arquivos JSON.
+- ✅ Backup avançado:
+  - 🔸 Por categoria.
+  - 🔸 Por status (Concluído/Pendente).
+  - 🔸 Por intervalo de datas.
+- ✅ Função de reset total do banco (**Truncate**).
+- ✅ Garantia de que nenhuma tarefa fique sem categoria, com a categoria fixa **"Sem Categoria"** protegida contra remoção.
 
 ---
 
-## 🏛️ Arquitetura do Projeto
+## 🏗️ Arquitetura do Projeto
 
-```
-
+```plaintext
 lib/
-├── database/       # Configuração do banco de dados (IsarService)
-├── models/         # Entidades: Task e Category
-├── services/       # Serviços de dados: CRUD, Queries, Backup/Restore
-├── ui/             # Interface (UI) - Páginas e Componentes Flutter
-│   ├── pages/      # Telas principais do app
-│   └── widgets/    # (Opcional) Componentes reutilizáveis
-├── lab/            # Laboratório de testes (CRUD, Backup, Queries)
-└── main.dart       # Entrada do app - inicializa backend + frontend
-
-```
-
----
-
-## 🔥 Funcionalidades
-
-### 🏗️ **Back-End Local (Camada de Dados)**
-- CRUD completo para Tarefas e Categorias.
-- Filtros:
-    - Por status (Concluído/Pendente)
-    - Por categoria
-- Backup em JSON.
-- Restauração dos dados via JSON.
-- Gerenciado pelo banco local **Isar** (super rápido e offline).
-
-### 🎨 **Front-End (Interface)**
-- Tela inicial com lista de tarefas.
-- Tela para criar e editar tarefas.
-- Tela de categorias.
-- Tela de configurações:
-    - Backup dos dados.
-    - Restauração de dados.
-- UI moderna, minimalista e responsiva.
-
----
-
-## 💾 Backup e Restore
-
-- O arquivo de backup é salvo no diretório local do app:
-
-```
-
-\<diretório\_do\_app>/uno\_list\_backup.json
-
+├── database/        # Configuração do banco (IsarService)
+├── models/          # Entidades (Task e Category)
+├── services/        # Lógica de dados: CRUD, Queries, Backup, Restore, Truncate
+├── ui/              # Interface do usuário (Flutter)
+│   ├── pages/       # Telas (Home, TaskForm, Categories, Settings)
+│   └── widgets/     # Componentes reutilizáveis (TaskItem, etc.)
+├── utils/           # Extensões e funções auxiliares
+├── lab/             # Laboratório para testes no console
+└── main.dart        # Ponto de entrada do app
 ````
 
-- Pode ser usado para transferir dados entre dispositivos ou fazer restaurações manuais.
+---
+
+## 🔥 Tecnologias Utilizadas
+
+* 🏗️ **Flutter** — UI e lógica
+* 💙 **Dart** — Linguagem principal
+* 💾 **Isar Database** — Banco de dados local NoSQL ultra rápido
+* 📂 **path\_provider** — Diretórios locais
+* 📦 **file\_picker** — Importação de arquivos JSON
+* 🗃️ **dart\:convert** e **dart\:io** — Manipulação de JSON e arquivos
+
+---
+
+## 🔗 Estrutura dos Dados (Models)
+
+### 🗂️ Category
+
+```dart
+Category {
+int id;
+String name;
+int color;
+DateTime createdAt;
+}
+```
+
+### ✅ Task
+
+```dart
+Task {
+int id;
+String title;
+String? description;
+DateTime? dueDate;
+int? categoryId;
+bool isCompleted;
+String priority; // Alta | Média | Baixa
+DateTime createdAt;
+}
+```
+
+Ambos possuem suporte total a JSON (`toJson()` e `fromJson()`).
+
+---
+
+## 🧠 Funcionalidades de Backup e Restore
+
+* ✔️ **Backup completo:** Exporta todas as tarefas e categorias para um arquivo `.json`.
+* ✔️ **Restore completo:** Importa os dados de um backup.
+* ✔️ **Backup avançado:** Permite selecionar:
+
+  * Por categoria.
+  * Por status (Concluído ou Pendente).
+  * Por período (`createdAt`).
+* ✔️ **Arquivos nomeados automaticamente:**
+
+```plaintext
+backup_2025-05-27_18-42-00.json
+```
+
+* ✔️ O backup funciona como transporte de dados entre dispositivos.
 
 ---
 
 ## 🏗️ Como Executar o Projeto
 
-### 1️⃣ Instale as dependências:
+### 🔥 Instale as dependências:
 
 ```bash
 flutter pub get
-````
+```
 
-### 2️⃣ Gere os arquivos do Isar (modelos):
+### 🔥 Gere os arquivos do Isar:
 
 ```bash
 dart run build_runner build
 ```
 
-### 3️⃣ Execute o app:
+### 🚀 Execute o app:
 
 ```bash
 flutter run
 ```
 
-🟢 Ou rode diretamente pelo Android Studio clicando em **"Run"** no arquivo `main.dart`.
+Ou clique em **"Run"** no `main.dart` no Android Studio ou VSCode.
 
 ---
 
-## 🧪 Executando o Lab (Testes Internos)
+## 🧪 Rodando o Lab (Testes no Console)
 
-### ✔️ Para rodar os testes manuais de backend:
+Execute comandos de CRUD, Backup, Restore, Truncate e Queries diretamente no terminal:
 
 ```bash
 flutter run -t lib/lab/lab_main.dart
 ```
 
-→ O Lab executa sequencialmente testes de CRUD, Backup, Restore e Queries, exibindo os resultados no console.
+---
+
+## 🚦 Status Atual do Projeto
+
+| Módulo                 | Status                  |
+| ---------------------- | ----------------------- |
+| Back-End Local (Isar)  | ✅ Finalizado e validado |
+| Front-End (UI Flutter) | 🚀 Funcional e completo |
 
 ---
 
-## 🚦 Status do Projeto
+## 🧠 Boas Práticas e Design
 
-| Módulo                 | Status                 |
-| ---------------------- | ---------------------- |
-| Back-End Local (Isar)  | ✅ Finalizado e testado |
-| Front-End (UI Flutter) | 🚧 Em desenvolvimento  |
+* ✅ **Arquitetura limpa:**
+
+  * Models isolados.
+  * Serviços responsáveis pela lógica de dados.
+  * UI desacoplada da lógica de persistência.
+* ✅ **Singleton do banco (IsarService)**.
+* ✅ **Categoria protegida "Sem Categoria"**:
+
+  * Nunca pode ser deletada.
+  * Tarefas órfãs são automaticamente movidas para ela.
+* ✅ **Backup seguro com timestamp no nome dos arquivos**.
+* ✅ **Código documentado, limpo e organizado.**
 
 ---
 
-## 🧠 Boas Práticas no Projeto
+## 🧰 Melhorias Futuras (Ideias)
 
-* Arquitetura limpa com separação de responsabilidades:
-
-    * `/models/` → Entidades
-    * `/services/` → Lógica de dados
-    * `/database/` → Configuração do Isar
-    * `/ui/` → Telas e componentes Flutter
-    * `/lab/` → Laboratório de testes manuais
-* Uso de `IsarService` como **Singleton**, evitando erros de múltiplas instâncias do banco.
+* 🔗 Sincronização na nuvem (Google Drive, Dropbox ou outro).
+* 🔔 Notificações locais para tarefas com prazo.
+* 📅 Integração com calendário.
+* 🌓 Tema escuro/claro.
+* 📊 Relatórios e gráficos de produtividade.
+* 🌐 Multi-idioma (Internacionalização).
 
 ---
 
 ## 📜 Licença
 
-Este projeto está licenciado sob a [MIT License](./LICENSE).
+MIT License — [Leia aqui](./LICENSE)
 
 ---
 
 ## ✨ Autor
 
-**Paulo Castelo** – *aka* **ZeroAvenger**
-🔗 [LinkedIn](https://www.linkedin.com/in/paulo-castelo/) | 🚀 [GitHub](https://github.com/paulocastelo)
+**Paulo Castelo** – *a.k.a* **ZeroAvenger**
+🚀 [GitHub](https://github.com/paulocastelo)
+🔗 [LinkedIn](https://www.linkedin.com/in/paulo-castelo)
 
 ---
+
