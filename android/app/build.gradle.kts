@@ -1,14 +1,28 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.castlecorp.unolist"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 35
+
+    // Pode remover esta linha se não estiver usando recursos nativos via NDK
+//    ndkVersion = "34.0.0"
+
+    defaultConfig {
+        // TODO: Substitua por um ID exclusivo se necessário (https://developer.android.com/studio/build/application-id)
+        applicationId = "com.castlecorp.unolist"
+
+        // Versões mínimas e alvo definidas pelo Flutter
+        minSdk = 21
+        targetSdk = 35
+//        minSdk = flutter.minSdkVersion
+//        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -19,26 +33,28 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.castlecorp.unolist"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
-
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Desativa a minificação e a remoção de recursos não utilizados
+            isMinifyEnabled = false
+            isShrinkResources = false
+
+            // TODO: Configure sua assinatura de release
             signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
 
+// Indica a raiz do projeto Flutter
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Inclui a biblioteca padrão do Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }

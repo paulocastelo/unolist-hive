@@ -1,18 +1,24 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'category.g.dart';
 
-@collection
-class Category {
-  Id id = Isar.autoIncrement;
+@HiveType(typeId: 0)
+class Category extends HiveObject {
+  @HiveField(0)
+  int id;
 
-  late String name;
-  late int color;
-  late DateTime createdAt;
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  int color;
+
+  @HiveField(3)
+  DateTime createdAt;
 
   /// 🚀 Construtor principal
   Category({
-    this.id = Isar.autoIncrement,
+    required this.id,
     required this.name,
     required this.color,
     required this.createdAt,
@@ -24,6 +30,7 @@ class Category {
     required int color,
   }) {
     return Category(
+      id: DateTime.now().millisecondsSinceEpoch,
       name: name,
       color: color,
       createdAt: DateTime.now(),
@@ -43,7 +50,7 @@ class Category {
   /// 🔄 Desserialização ← JSON
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['id'] ?? Isar.autoIncrement,
+      id: json['id'],
       name: json['name'],
       color: json['color'],
       createdAt: DateTime.parse(json['createdAt']),

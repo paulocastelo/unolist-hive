@@ -12,24 +12,39 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  file_picker: ^10.1.9
+  file_picker: ^6.2.0
   collection: ^1.18.0
   url_launcher: ^6.2.5
-
-  # Dependências adicionadas
-  isar: ^3.1.0
-  isar_flutter_libs: ^3.1.0
   path_provider: ^2.1.2
+
+  # Hive
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+
+  # Por conta da migração para o hive, não é mais necessário
+  # Dependências do Isar
+#  isar: ^3.1.0+1
+#  isar_flutter_libs: ^3.1.0
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-
-  # Dependências de desenvolvimento adicionadas
   build_runner: ^2.4.8
-  isar_generator: ^3.1.0
+  # Retirado por conta da migração para o hive
+#  isar_generator: ^3.1.0+1
+  # Migrcao para o Hive
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 flutter:
   uses-material-design: true
+
+dependency_overrides:
+  file_picker:
+    git:
+      url: https://github.com/miguelpruivo/flutter_file_picker
+      ref: master

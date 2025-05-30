@@ -1,4 +1,3 @@
-import 'package:isar/isar.dart';
 import '../../services/isar_service.dart';
 import '../../models/task.dart';
 import '../../services/task_service.dart';

@@ -1,4 +1,5 @@
 /// 🔗 Extensões úteis para o projeto UnoList.
+library;
 
 import 'dart:math';
 

@@ -7,7 +7,7 @@ import '../../services/isar_service.dart';
 
 /// Página de gerenciamento de categorias.
 class CategoryPage extends StatefulWidget {
-  const CategoryPage({Key? key}) : super(key: key);
+  const CategoryPage({super.key});
 
   @override
   State<CategoryPage> createState() => _CategoryPageState();
@@ -87,10 +87,10 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     final isEditing = category != null;
 
     final nameController = TextEditingController(
-      text: isEditing ? category!.name : '',
+      text: isEditing ? category.name : '',
     );
 
-    int selectedColor = isEditing ? category!.color : Colors.blue.value;
+    int selectedColor = isEditing ? category.color : Colors.blue.value;
 
     await showDialog(
       context: context,
@@ -151,7 +151,7 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
                 }
 
                 if (isEditing) {
-                  final updated = category!..name = name..color = selectedColor;
+                  final updated = category..name = name..color = selectedColor;
                   await _categoryService.updateCategory(updated);
                 } else {
                   final newCategory = Category.create(

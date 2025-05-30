@@ -1,21 +1,25 @@
-# 📝 UnoList
 
-UnoList é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Isar Database**, suporte total a **backup em JSON**, restauração, e uma interface leve e funcional.
+# 📝 UnoList-Hive
+
+UnoList-Hive é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Hive Database**, suporte total a **backup em JSON**, restauração, e uma interface leve e funcional.
+
+Este projeto é uma **migração** do [UnoList](https://github.com/paulocastelo/unolist), que utilizava **Isar Database**, para **Hive** com o objetivo de explorar uma alternativa mais leve e compatível com múltiplas plataformas.
 
 ---
 
 ## 🚀 Funcionalidades Principais
 
-- ✅ Criar, editar, excluir e concluir tarefas.
-- ✅ Gerenciar categorias com seleção de cores.
-- ✅ Aplicar filtros por categorias e busca textual.
-- ✅ Backup e restauração dos dados via arquivos JSON.
-- ✅ Backup avançado:
-  - 🔸 Por categoria.
-  - 🔸 Por status (Concluído/Pendente).
-  - 🔸 Por intervalo de datas.
-- ✅ Função de reset total do banco (**Truncate**).
-- ✅ Garantia de que nenhuma tarefa fique sem categoria, com a categoria fixa **"Sem Categoria"** protegida contra remoção.
+* ✅ Criar, editar, excluir e concluir tarefas.
+* ✅ Gerenciar categorias com seleção de cores.
+* ✅ Aplicar filtros por categorias e busca textual.
+* ✅ Backup e restauração dos dados via arquivos JSON.
+* ✅ Backup avançado:
+
+  * 🔸 Por categoria.
+  * 🔸 Por status (Concluído/Pendente).
+  * 🔸 Por intervalo de datas.
+* ✅ Função de reset total do banco (**Truncate**).
+* ✅ Garantia de que nenhuma tarefa fique sem categoria, com a categoria fixa **"Sem Categoria"** protegida contra remoção.
 
 ---
 
@@ -23,7 +27,7 @@ UnoList é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flut
 
 ```plaintext
 lib/
-├── database/        # Configuração do banco (IsarService)
+├── database/        # Configuração do banco (HiveService)
 ├── models/          # Entidades (Task e Category)
 ├── services/        # Lógica de dados: CRUD, Queries, Backup, Restore, Truncate
 ├── ui/              # Interface do usuário (Flutter)
@@ -32,7 +36,7 @@ lib/
 ├── utils/           # Extensões e funções auxiliares
 ├── lab/             # Laboratório para testes no console
 └── main.dart        # Ponto de entrada do app
-````
+```
 
 ---
 
@@ -40,7 +44,7 @@ lib/
 
 * 🏗️ **Flutter** — UI e lógica
 * 💙 **Dart** — Linguagem principal
-* 💾 **Isar Database** — Banco de dados local NoSQL ultra rápido
+* 🐝 **Hive** — Banco de dados local NoSQL leve e rápido
 * 📂 **path\_provider** — Diretórios locais
 * 📦 **file\_picker** — Importação de arquivos JSON
 * 🗃️ **dart\:convert** e **dart\:io** — Manipulação de JSON e arquivos
@@ -91,7 +95,7 @@ Ambos possuem suporte total a JSON (`toJson()` e `fromJson()`).
 * ✔️ **Arquivos nomeados automaticamente:**
 
 ```plaintext
-backup_2025-05-27_18-42-00.json
+backup_2025-05-30_18-42-00.json
 ```
 
 * ✔️ O backup funciona como transporte de dados entre dispositivos.
@@ -104,12 +108,6 @@ backup_2025-05-27_18-42-00.json
 
 ```bash
 flutter pub get
-```
-
-### 🔥 Gere os arquivos do Isar:
-
-```bash
-dart run build_runner build
 ```
 
 ### 🚀 Execute o app:
@@ -136,7 +134,7 @@ flutter run -t lib/lab/lab_main.dart
 
 | Módulo                 | Status                  |
 | ---------------------- | ----------------------- |
-| Back-End Local (Isar)  | ✅ Finalizado e validado |
+| Back-End Local (Hive)  | ✅ Finalizado e validado |
 | Front-End (UI Flutter) | 🚀 Funcional e completo |
 
 ---
@@ -148,7 +146,7 @@ flutter run -t lib/lab/lab_main.dart
   * Models isolados.
   * Serviços responsáveis pela lógica de dados.
   * UI desacoplada da lógica de persistência.
-* ✅ **Singleton do banco (IsarService)**.
+* ✅ **Singleton do banco (HiveService)**.
 * ✅ **Categoria protegida "Sem Categoria"**:
 
   * Nunca pode ser deletada.
@@ -182,4 +180,3 @@ MIT License — [Leia aqui](./LICENSE)
 🔗 [LinkedIn](https://www.linkedin.com/in/paulo-castelo)
 
 ---
-

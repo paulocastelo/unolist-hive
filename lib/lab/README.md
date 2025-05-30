@@ -1,42 +1,41 @@
-# 🧪 UnoList Lab — Laboratório de Testes
 
-Este diretório contém o **laboratório de testes manuais e exploratórios** do projeto **UnoList**.
+# 🧪 UnoList-Hive Lab — Laboratório de Testes
+
+Este diretório contém o **laboratório de testes manuais e exploratórios** do projeto **UnoList-Hive**.
 
 O objetivo deste ambiente é permitir que os desenvolvedores:
 
-- ✅ Validem os serviços do back-end local.
-- ✅ Realizem testes de CRUD, Queries e Backup/Restore.
-- ✅ Executem testes organizados, modulares e reaproveitáveis.
-- ✅ Mantenham o `main.dart` limpo e focado na aplicação real.
+* ✅ Validem os serviços do back-end local baseado em **Hive**.
+* ✅ Realizem testes de CRUD, Queries e Backup/Restore.
+* ✅ Executem testes organizados, modulares e reaproveitáveis.
+* ✅ Mantenham o `main.dart` limpo e focado na aplicação real.
 
 ---
 
 ## 🏗️ Estrutura do `/lab/`
 
-```
-
+```plaintext
 lab/
-├── crud\_tests/          # Testes de CRUD (Create, Read, Update, Delete)
-│   ├── category\_crud\_test.dart
-│   └── task\_crud\_test.dart
-├── backup\_tests/        # Testes de Backup e Restore
-│   └── backup\_test.dart
-├── query\_tests/         # Testes de filtros e buscas
-│   └── task\_query\_test.dart
-├── lab\_main.dart        # 🚀 Arquivo principal que executa todos os testes sequencialmente
+├── crud_tests/          # Testes de CRUD (Create, Read, Update, Delete)
+│   ├── category_crud_test.dart
+│   └── task_crud_test.dart
+├── backup_tests/        # Testes de Backup e Restore
+│   └── backup_test.dart
+├── query_tests/         # Testes de filtros e buscas
+│   └── task_query_test.dart
+├── lab_main.dart        # 🚀 Arquivo principal que executa todos os testes sequencialmente
 └── README.md            # Este arquivo de documentação
-
-````
+```
 
 ---
 
-## 🚀 Como executar o UnoList Lab
+## 🚀 Como executar o UnoList-Hive Lab
 
 No terminal:
 
 ```bash
 flutter run -t lib/lab/lab_main.dart
-````
+```
 
 Ou no Android Studio:
 
@@ -74,7 +73,7 @@ Todos os testes são rodados em sequência, e os resultados são exibidos no con
 
 * 🔥 Ambiente seguro para testar sem afetar o app real.
 * 🏗️ Arquitetura limpa, modular e escalável.
-* 🧠 Serve como documentação viva do funcionamento dos serviços do back-end.
+* 🧠 Serve como documentação viva do funcionamento dos serviços do back-end local (**Hive**).
 * ✅ Facilita debugging, desenvolvimento e validação de novas features.
 
 ---
@@ -96,7 +95,7 @@ Todos os testes são rodados em sequência, e os resultados são exibidos no con
 
 ## ✨ Autor
 
-**Paulo Castelo** – *aka* **ZeroAvenger**
+**Paulo Castelo** – *a.k.a* **ZeroAvenger**
 🔗 [LinkedIn](https://www.linkedin.com/in/paulo-castelo/) | 🚀 [GitHub](https://github.com/paulocastelo)
 
 ---
@@ -105,4 +104,4 @@ Todos os testes são rodados em sequência, e os resultados são exibidos no con
 
 Este projeto está licenciado sob a [MIT License](../../LICENSE).
 
-```
+---

@@ -188,7 +188,7 @@ class BackupService {
     final dir = await getApplicationDocumentsDirectory();
 
     final timestamp = _timestamp();
-    final file = File('${dir.path}/$fileName\_$timestamp.json');
+    final file = File('${dir.path}/${fileName}_$timestamp.json');
 
     return await file.writeAsString(json);
   }

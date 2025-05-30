@@ -1,22 +1,36 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'task.g.dart';
 
-@collection
-class Task {
-  Id id = Isar.autoIncrement;
+@HiveType(typeId: 1)
+class Task extends HiveObject {
+  @HiveField(0)
+  int id;
 
-  late String title;
+  @HiveField(1)
+  String title;
+
+  @HiveField(2)
   String? description;
+
+  @HiveField(3)
   DateTime? dueDate;
+
+  @HiveField(4)
   int? categoryId;
-  bool isCompleted = false;
-  late String priority;
-  late DateTime createdAt;
+
+  @HiveField(5)
+  bool isCompleted;
+
+  @HiveField(6)
+  String priority;
+
+  @HiveField(7)
+  DateTime createdAt;
 
   /// 🚀 Construtor principal
   Task({
-    this.id = Isar.autoIncrement,
+    required this.id,
     required this.title,
     this.description,
     this.dueDate,
@@ -35,6 +49,7 @@ class Task {
     String priority = 'Média',
   }) {
     return Task(
+      id: DateTime.now().millisecondsSinceEpoch,
       title: title,
       description: description,
       dueDate: dueDate,
@@ -62,7 +77,7 @@ class Task {
   /// 🔄 Desserialização ← JSON
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] ?? Isar.autoIncrement,
+      id: json['id'],
       title: json['title'],
       description: json['description'],
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,

@@ -11,14 +11,14 @@ class TaskItemWidget extends StatelessWidget {
   final VoidCallback onTap;
 
   const TaskItemWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.category,
     required this.date,
     required this.isCompleted,
     required this.onToggleComplete,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

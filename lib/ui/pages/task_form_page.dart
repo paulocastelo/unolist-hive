@@ -13,7 +13,7 @@ import '../../services/isar_service.dart';
 class TaskFormPage extends StatefulWidget {
   final Task? task;
 
-  const TaskFormPage({Key? key, this.task}) : super(key: key);
+  const TaskFormPage({super.key, this.task});
 
   @override
   State<TaskFormPage> createState() => _TaskFormPageState();

@@ -36,8 +36,7 @@ class TaskService {
 
     // 🔍 Validação de prioridade
     const prioridadesValidas = ['Alta', 'Média', 'Baixa'];
-    if (task.priority != null &&
-        !prioridadesValidas.contains(task.priority)) {
+    if (!prioridadesValidas.contains(task.priority)) {
       throw Exception(
           'Prioridade inválida. Use: Alta, Média ou Baixa.');
     }

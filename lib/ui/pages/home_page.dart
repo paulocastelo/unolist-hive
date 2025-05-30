@@ -16,7 +16,7 @@ import 'task_form_page.dart';
 
 /// Página principal do app UnoList.
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 🏷️ Filtros de categoria
   Widget _buildFilterChips() {
-    final filters = ['All', ...categories.map((c) => c.name).toList()];
+    final filters = ['All', ...categories.map((c) => c.name)];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

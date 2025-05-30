@@ -1,4 +1,3 @@
-import 'package:isar/isar.dart';
 import '../../services/isar_service.dart';
 import '../../models/category.dart';
 import '../../services/category_service.dart';

@@ -9,7 +9,7 @@ import '../../services/isar_service.dart';
 
 /// Página de Backup e Restore de dados.
 class BackupPage extends StatefulWidget {
-  const BackupPage({Key? key}) : super(key: key);
+  const BackupPage({super.key});
 
   @override
   State<BackupPage> createState() => _BackupPageState();
