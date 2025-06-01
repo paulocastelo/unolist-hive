@@ -35,7 +35,7 @@ class AboutPage extends StatelessWidget {
             // 🔥 Descrição
             const Text(
               'UnoList é um aplicativo de lista de tarefas offline, '
-                  'desenvolvido em Flutter, utilizando Isar Database para armazenamento local rápido e seguro.\n\n'
+                  'desenvolvido em Flutter, utilizando Hive Database para armazenamento local rápido e seguro.\n\n'
                   'Funcionalidades principais:\n'
                   '• Gerenciamento de tarefas e categorias.\n'
                   '• Backup e restauração local (JSON).\n'

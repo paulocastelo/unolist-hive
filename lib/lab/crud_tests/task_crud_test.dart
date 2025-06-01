@@ -1,4 +1,5 @@
-import '../../services/isar_service.dart';
+import 'package:hive/hive.dart';
+
 import '../../models/task.dart';
 import '../../services/task_service.dart';
 
@@ -6,22 +7,19 @@ import '../../services/task_service.dart';
 Future<void> taskCrudTest() async {
   print('🧪 Iniciando testes de Task CRUD');
 
-  // 🔥 Obtém a instância do banco
-  final isar = await IsarService().db;
+  // 🔥 Abre a box
+  final taskBox = Hive.box<Task>('tasks');
 
-  // 🔗 Inicializa o serviço de tarefas com o banco Isar
-  final taskService = TaskService(isar);
-
-  // 🏗️ Cria uma tarefa para teste
-  final task = Task.create(
-    title: 'Fazer backup',
-    description: 'Backup dos dados do UnoList',
-    dueDate: DateTime.now().add(const Duration(days: 1)),
-    priority: 'Alta',
-  );
+  // 🔗 Inicializa o serviço de tarefas
+  final taskService = TaskService(taskBox);
 
   // 💾 Adiciona a tarefa no banco
-  await taskService.addTask(task);
+  await taskService.addTask(
+    title: 'Fazer backup',
+    description: 'Backup dos dados do UnoList',
+    dueDate: DateTime.now(),
+    priority: 'Alta',
+  );
 
   // 🔍 Busca e imprime todas as tarefas
   final tasks = await taskService.getAllTasks();
@@ -31,6 +29,7 @@ Future<void> taskCrudTest() async {
   }
 
   // ❌ Deleta a tarefa criada
+  final task = tasks.firstWhere((t) => t.title == 'Fazer backup');
   await taskService.deleteTask(task.id);
   print('🗑️ Tarefa deletada.');
 

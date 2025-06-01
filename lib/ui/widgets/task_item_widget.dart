@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Widget responsável por exibir um item da lista de tarefas.
+/// 🎯 Widget responsável por exibir um item da lista de tarefas.
 class TaskItemWidget extends StatelessWidget {
   final String title;
   final String category;
@@ -23,7 +23,7 @@ class TaskItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap, // Ação ao tocar no card
+      onTap: onTap, // 🎯 Ação ao tocar no card
       child: Container(
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.only(bottom: 12),

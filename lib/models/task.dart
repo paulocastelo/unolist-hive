@@ -5,7 +5,7 @@ part 'task.g.dart';
 @HiveType(typeId: 1)
 class Task extends HiveObject {
   @HiveField(0)
-  int id;
+  String id; // ⬅️ Troca de int para String
 
   @HiveField(1)
   String title;
@@ -17,7 +17,7 @@ class Task extends HiveObject {
   DateTime? dueDate;
 
   @HiveField(4)
-  int? categoryId;
+  String? categoryId; // ⬅️ Também vamos precisar mudar esse campo porque categoryId era int.
 
   @HiveField(5)
   bool isCompleted;
@@ -30,7 +30,7 @@ class Task extends HiveObject {
 
   /// 🚀 Construtor principal
   Task({
-    required this.id,
+    required this.id, // Agora é String
     required this.title,
     this.description,
     this.dueDate,
@@ -42,14 +42,15 @@ class Task extends HiveObject {
 
   /// 🏗️ Fábrica simplificada
   factory Task.create({
+    required String id, // Passa o id como String
     required String title,
     String? description,
     DateTime? dueDate,
-    int? categoryId,
+    String? categoryId, // Muda aqui também para String?
     String priority = 'Média',
   }) {
     return Task(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: id, // Recebe id já gerado
       title: title,
       description: description,
       dueDate: dueDate,
@@ -77,11 +78,13 @@ class Task extends HiveObject {
   /// 🔄 Desserialização ← JSON
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'],
+      id: json['id'], // String
       title: json['title'],
       description: json['description'],
-      dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
-      categoryId: json['categoryId'],
+      dueDate: json['dueDate'] != null
+          ? DateTime.parse(json['dueDate'])
+          : null,
+      categoryId: json['categoryId'], // Também String
       isCompleted: json['isCompleted'] ?? false,
       priority: json['priority'] ?? 'Média',
       createdAt: DateTime.parse(json['createdAt']),

@@ -1,16 +1,19 @@
+import 'package:hive/hive.dart';
 
-import '../../services/isar_service.dart';
+import '../../models/task.dart';
+import '../../models/category.dart';
 import '../../services/backup_service.dart';
 
 /// 🧪 Teste de Backup e Restore (Exportação e Importação)
 Future<void> backupTest() async {
   print('💾 Iniciando testes de Backup e Restore');
 
-  // 🔥 Inicializa o banco
-  final isar = await IsarService().db;
+  // 🔥 Inicializa as boxes
+  final taskBox = Hive.box<Task>('tasks');
+  final categoryBox = Hive.box<Category>('categories');
 
   // 🔗 Inicializa o serviço de backup
-  final backupService = BackupService(isar);
+  final backupService = BackupService(taskBox: taskBox, categoryBox: categoryBox);
 
   // 💾 Exporta os dados
   final file = await backupService.exportAllData();

@@ -1,4 +1,3 @@
-
 # 📝 UnoList-Hive
 
 UnoList-Hive é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Hive Database**, suporte total a **backup em JSON**, restauração, e uma interface leve e funcional.
@@ -36,7 +35,7 @@ lib/
 ├── utils/           # Extensões e funções auxiliares
 ├── lab/             # Laboratório para testes no console
 └── main.dart        # Ponto de entrada do app
-```
+````
 
 ---
 
@@ -45,6 +44,7 @@ lib/
 * 🏗️ **Flutter** — UI e lógica
 * 💙 **Dart** — Linguagem principal
 * 🐝 **Hive** — Banco de dados local NoSQL leve e rápido
+* 🆔 **uuid** — Geração de IDs únicos universais (UUID v4)
 * 📂 **path\_provider** — Diretórios locais
 * 📦 **file\_picker** — Importação de arquivos JSON
 * 🗃️ **dart\:convert** e **dart\:io** — Manipulação de JSON e arquivos
@@ -57,10 +57,10 @@ lib/
 
 ```dart
 Category {
-int id;
-String name;
-int color;
-DateTime createdAt;
+  String id;        // UUID
+  String name;
+  int color;
+  DateTime createdAt;
 }
 ```
 
@@ -68,14 +68,14 @@ DateTime createdAt;
 
 ```dart
 Task {
-int id;
-String title;
-String? description;
-DateTime? dueDate;
-int? categoryId;
-bool isCompleted;
-String priority; // Alta | Média | Baixa
-DateTime createdAt;
+  String id;        // UUID
+  String title;
+  String? description;
+  DateTime? dueDate;
+  String? categoryId; // UUID da Categoria
+  bool isCompleted;
+  String priority; // Alta | Média | Baixa
+  DateTime createdAt;
 }
 ```
 
@@ -95,7 +95,7 @@ Ambos possuem suporte total a JSON (`toJson()` e `fromJson()`).
 * ✔️ **Arquivos nomeados automaticamente:**
 
 ```plaintext
-backup_2025-05-30_18-42-00.json
+backup_2025-06-01_12-00-00.json
 ```
 
 * ✔️ O backup funciona como transporte de dados entre dispositivos.
@@ -108,6 +108,12 @@ backup_2025-05-30_18-42-00.json
 
 ```bash
 flutter pub get
+```
+
+### 🧩 Gere os Adapters do Hive:
+
+```bash
+flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
 ### 🚀 Execute o app:
@@ -147,11 +153,12 @@ flutter run -t lib/lab/lab_main.dart
   * Serviços responsáveis pela lógica de dados.
   * UI desacoplada da lógica de persistência.
 * ✅ **Singleton do banco (HiveService)**.
-* ✅ **Categoria protegida "Sem Categoria"**:
+* ✅ **Categoria protegida "Sem Categoria":**
 
   * Nunca pode ser deletada.
   * Tarefas órfãs são automaticamente movidas para ela.
 * ✅ **Backup seguro com timestamp no nome dos arquivos**.
+* ✅ **Geração segura de IDs com UUID v4**.
 * ✅ **Código documentado, limpo e organizado.**
 
 ---

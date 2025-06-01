@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  uuid: ^4.2.1
   cupertino_icons: ^1.0.8
   file_picker: ^6.2.0
   collection: ^1.18.0
@@ -21,24 +21,13 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
 
-
-  # Por conta da migração para o hive, não é mais necessário
-  # Dependências do Isar
-#  isar: ^3.1.0+1
-#  isar_flutter_libs: ^3.1.0
-
-
 dev_dependencies:
+  hive_generator: ^2.0.1
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.8
-  # Retirado por conta da migração para o hive
-#  isar_generator: ^3.1.0+1
-  # Migrcao para o Hive
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
+  build_runner: ^2.4.6
 
 flutter:
   uses-material-design: true

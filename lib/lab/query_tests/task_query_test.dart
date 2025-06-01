@@ -1,15 +1,17 @@
-import '../../services/isar_service.dart';
+import 'package:hive/hive.dart';
+
+import '../../models/task.dart';
 import '../../services/task_service.dart';
 
 /// 🔍 Função de teste para consultas (queries) na entidade Task.
 Future<void> taskQueryTest() async {
   print('🔍 Iniciando testes de Queries de Tasks');
 
-  // 🔥 Obtém a instância do banco
-  final isar = await IsarService().db;
+  // 🔥 Abre a box
+  final taskBox = Hive.box<Task>('tasks');
 
-  // 🔗 Inicializa o serviço de tarefas com o banco Isar
-  final taskService = TaskService(isar);
+  // 🔗 Inicializa o serviço de tarefas
+  final taskService = TaskService(taskBox);
 
   // 🔍 Busca tarefas concluídas
   final completedTasks = await taskService.getTasksByCompletion(true);

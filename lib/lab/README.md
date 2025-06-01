@@ -1,4 +1,3 @@
-
 # 🧪 UnoList-Hive Lab — Laboratório de Testes
 
 Este diretório contém o **laboratório de testes manuais e exploratórios** do projeto **UnoList-Hive**.
@@ -7,6 +6,7 @@ O objetivo deste ambiente é permitir que os desenvolvedores:
 
 * ✅ Validem os serviços do back-end local baseado em **Hive**.
 * ✅ Realizem testes de CRUD, Queries e Backup/Restore.
+* ✅ Testem o sistema com **UUIDs** como identificadores (`String`).
 * ✅ Executem testes organizados, modulares e reaproveitáveis.
 * ✅ Mantenham o `main.dart` limpo e focado na aplicação real.
 
@@ -25,7 +25,7 @@ lab/
 │   └── task_query_test.dart
 ├── lab_main.dart        # 🚀 Arquivo principal que executa todos os testes sequencialmente
 └── README.md            # Este arquivo de documentação
-```
+````
 
 ---
 
@@ -59,19 +59,20 @@ Todos os testes são rodados em sequência, e os resultados são exibidos no con
 
 ## 🧠 Descrição dos Testes
 
-| Diretório       | Arquivo                   | Descrição                                                          |
-| --------------- | ------------------------- | ------------------------------------------------------------------ |
-| `crud_tests/`   | `category_crud_test.dart` | Testes de criação, listagem, atualização e exclusão de categorias. |
-|                 | `task_crud_test.dart`     | Testes de CRUD completo para tarefas.                              |
-| `backup_tests/` | `backup_test.dart`        | Teste de exportação e importação de backup JSON.                   |
-| `query_tests/`  | `task_query_test.dart`    | Testes de filtros de tarefas (status, categoria).                  |
-| 🔗 Raiz         | `lab_main.dart`           | Arquivo principal que executa todos os testes sequencialmente.     |
+| Diretório       | Arquivo                   | Descrição                                                         |
+| --------------- | ------------------------- | ----------------------------------------------------------------- |
+| `crud_tests/`   | `category_crud_test.dart` | Testes de criação, listagem e exclusão de categorias usando UUID. |
+|                 | `task_crud_test.dart`     | Testes completos de CRUD para tarefas com UUIDs.                  |
+| `backup_tests/` | `backup_test.dart`        | Teste de exportação e importação de backup JSON.                  |
+| `query_tests/`  | `task_query_test.dart`    | Testes de filtros de tarefas (concluídas/pendentes).              |
+| 🔗 Raiz         | `lab_main.dart`           | Arquivo principal que executa todos os testes sequencialmente.    |
 
 ---
 
 ## 💎 Vantagens deste Lab
 
 * 🔥 Ambiente seguro para testar sem afetar o app real.
+* 🆔 Testes já adaptados para UUID v4 como chave primária.
 * 🏗️ Arquitetura limpa, modular e escalável.
 * 🧠 Serve como documentação viva do funcionamento dos serviços do back-end local (**Hive**).
 * ✅ Facilita debugging, desenvolvimento e validação de novas features.

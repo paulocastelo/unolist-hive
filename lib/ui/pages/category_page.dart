@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 // 📦 Imports dos models e serviços
 import '../../models/category.dart';
+import '../../models/task.dart';
 import '../../services/category_service.dart';
-import '../../services/isar_service.dart';
+
+// 🧩 Import do widget novo
+import '../widgets/category_item_widget.dart';
+import '../widgets/custom_dialogs.dart';
 
 /// Página de gerenciamento de categorias.
 class CategoryPage extends StatefulWidget {
@@ -13,11 +18,9 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete implementation of 'abstract class State<T extends StatefulWidget> with Diagnosticable.build'.
-  // 🛠️ Serviço de categoria
+class _CategoryPageState extends State<CategoryPage> {
   late final CategoryService _categoryService;
 
-  // 📦 Lista de categorias
   List<Category> categories = [];
 
   @override
@@ -26,15 +29,14 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     _initializeService();
   }
 
-  /// 🔗 Inicializa o serviço de categoria
-  Future<void> _initializeService() async {
-    final isar = await IsarService().db;
-    _categoryService = CategoryService(isar);
+  void _initializeService() {
+    final categoryBox = Hive.box<Category>('categories');
+    final taskBox = Hive.box<Task>('tasks');
+    _categoryService = CategoryService(categoryBox: categoryBox, taskBox: taskBox);
 
     _loadCategories();
   }
 
-  /// 🔄 Carrega categorias do banco
   Future<void> _loadCategories() async {
     final loaded = await _categoryService.getAllCategories();
     setState(() {
@@ -42,7 +44,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     });
   }
 
-  /// 🗂️ Widget da lista de categorias
   Widget _buildCategoryList() {
     if (categories.isEmpty) {
       return const Center(
@@ -55,34 +56,19 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
       itemBuilder: (context, index) {
         final category = categories[index];
 
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Color(category.color),
-          ),
-          title: Text(category.name),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  _showCategoryDialog(category: category);
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  _confirmDelete(category);
-                },
-              ),
-            ],
-          ),
+        return CategoryItemWidget(
+          category: category,
+          onEdit: () {
+            _showCategoryDialog(category: category);
+          },
+          onDelete: () {
+            _confirmDelete(category);
+          },
         );
       },
     );
   }
 
-  /// 🔧 Diálogo para criar ou editar uma categoria
   Future<void> _showCategoryDialog({Category? category}) async {
     final isEditing = category != null;
 
@@ -100,7 +86,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 🔤 Campo nome
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
@@ -108,7 +93,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
                 ),
               ),
               const SizedBox(height: 16),
-              // 🎨 Seletor de cor
               Row(
                 children: [
                   const Text('Color:'),
@@ -151,18 +135,18 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
                 }
 
                 if (isEditing) {
-                  final updated = category..name = name..color = selectedColor;
+                  final updated = category!
+                    ..name = name
+                    ..color = selectedColor;
                   await _categoryService.updateCategory(updated);
                 } else {
-                  final newCategory = Category.create(
-                    name: name,
-                    color: selectedColor,
-                  );
-                  await _categoryService.addCategory(newCategory);
+                  await _categoryService.addCategory(name, selectedColor); // ✅ Atualizado aqui!
                 }
 
-                Navigator.pop(context);
-                _loadCategories();
+                if (mounted) {
+                  Navigator.pop(context);
+                  _loadCategories();
+                }
               },
               child: Text(isEditing ? 'Save' : 'Add'),
             ),
@@ -172,7 +156,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     );
   }
 
-  /// 🎨 Diálogo simples de seleção de cor
   Widget _colorPickerDialog(int currentColor) {
     final colors = [
       Colors.red,
@@ -212,7 +195,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     );
   }
 
-  /// 🗑️ Confirmação de exclusão
   Future<void> _confirmDelete(Category category) async {
     if (category.name == 'Sem Categoria') {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -221,22 +203,10 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
       return;
     }
 
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Category'),
-        content: Text('Are you sure you want to delete "${category.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    final confirm = await CustomDialogs.showConfirmationDialog(
+      context,
+      title: 'Delete Category',
+      content: 'Are you sure you want to delete "${category.name}"?',
     );
 
     if (confirm == true) {
@@ -245,7 +215,6 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
     }
   }
 
-  /// 🏗️ Interface principal da página
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -266,5 +235,4 @@ class _CategoryPageState extends State<CategoryPage> { //<--- Missing concrete i
       ),
     );
   }
-
 }

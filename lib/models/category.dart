@@ -5,7 +5,7 @@ part 'category.g.dart';
 @HiveType(typeId: 0)
 class Category extends HiveObject {
   @HiveField(0)
-  int id;
+  String id;
 
   @HiveField(1)
   String name;
@@ -26,11 +26,12 @@ class Category extends HiveObject {
 
   /// 🏗️ Fábrica simplificada
   factory Category.create({
+    required String id,
     required String name,
     required int color,
   }) {
     return Category(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: id,
       name: name,
       color: color,
       createdAt: DateTime.now(),

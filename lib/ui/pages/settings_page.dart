@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:hive/hive.dart';
+import '../../models/task.dart';
+import '../../models/category.dart';
 import '../../services/backup_service.dart';
-import '../../services/isar_service.dart';
+import '../widgets/custom_dialogs.dart'; // 👈 Import novo!
 
 /// ⚙️ Página de configurações do UnoList.
 class SettingsPage extends StatefulWidget {
@@ -23,30 +25,26 @@ class _SettingsPageState extends State<SettingsPage> {
     _initializeServices();
   }
 
-  /// 🔗 Inicializa os serviços
-  Future<void> _initializeServices() async {
-    final isar = await IsarService().db;
-    _backupService = BackupService(isar);
+  void _initializeServices() {
+    final taskBox = Hive.box<Task>('tasks');
+    final categoryBox = Hive.box<Category>('categories');
+    _backupService = BackupService(taskBox: taskBox, categoryBox: categoryBox);
   }
 
-  /// 💾 Faz o backup e salva como arquivo JSON
   Future<void> _handleBackup() async {
     try {
       final json = await _backupService.exportFullBackup();
       final dir = await getApplicationDocumentsDirectory();
-
       final file = File(
         '${dir.path}/backup_${DateTime.now().millisecondsSinceEpoch}.json',
       );
       await file.writeAsString(json);
-
       _showSnack('✅ Backup saved: ${file.path}');
     } catch (e) {
       _showSnack('❌ Backup failed: $e');
     }
   }
 
-  /// 🔁 Faz o restore a partir de um arquivo JSON
   Future<void> _handleRestore() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -59,7 +57,6 @@ class _SettingsPageState extends State<SettingsPage> {
         final json = await file.readAsString();
 
         await _backupService.importFullBackup(json);
-
         _showSnack('✅ Restore completed successfully');
       }
     } catch (e) {
@@ -67,26 +64,13 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  /// 🗑️ Limpa todos os dados do app (truncate)
   Future<void> _handleReset() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Reset App'),
-        content: const Text(
-          'Are you sure you want to delete ALL data?\nThis cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
-          ),
-        ],
-      ),
+    final confirm = await CustomDialogs.showConfirmationDialog(
+      context,
+      title: 'Reset App',
+      content: 'Are you sure you want to delete ALL data?\nThis cannot be undone.',
+      confirmText: 'Reset',
+      cancelText: 'Cancel',
     );
 
     if (confirm == true) {
@@ -95,7 +79,6 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  /// ✅ Mostra SnackBar
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -111,7 +94,6 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 💾 Backup
           ListTile(
             leading: const Icon(Icons.download),
             title: const Text('Backup'),
@@ -119,8 +101,6 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: _handleBackup,
           ),
           const Divider(),
-
-          // 🔁 Restore
           ListTile(
             leading: const Icon(Icons.upload),
             title: const Text('Restore'),
@@ -128,8 +108,6 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: _handleRestore,
           ),
           const Divider(),
-
-          // 🗑️ Reset App
           ListTile(
             leading: const Icon(Icons.delete_forever),
             title: const Text('Reset App'),
@@ -137,8 +115,6 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: _handleReset,
           ),
           const Divider(),
-
-          // ℹ️ About
           ListTile(
             leading: const Icon(Icons.info),
             title: const Text('About'),

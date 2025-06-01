@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 // 📦 Imports dos models e serviços
 import '../../models/task.dart';
 import '../../models/category.dart';
 import '../../services/task_service.dart';
 import '../../services/category_service.dart';
-import '../../services/isar_service.dart';
 
 // 🧩 Imports dos widgets
 import '../widgets/main_drawer.dart';
 import '../widgets/task_item_widget.dart';
+import '../widgets/filter_chip_widget.dart';
 
 // 📝 Imports das páginas
 import 'task_form_page.dart';
@@ -23,15 +24,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 🛠️ Serviços
   late final TaskService _taskService;
   late final CategoryService _categoryService;
 
-  // 📦 Dados
   List<Task> tasks = [];
   List<Category> categories = [];
 
-  // 🎯 Filtros
   String selectedFilter = 'All';
   String searchQuery = '';
 
@@ -41,15 +39,14 @@ class _HomePageState extends State<HomePage> {
     _initializeServices();
   }
 
-  /// 🔗 Inicializa os serviços
-  Future<void> _initializeServices() async {
-    final isar = await IsarService().db;
-    _taskService = TaskService(isar);
-    _categoryService = CategoryService(isar);
-    await _loadData();
+  void _initializeServices() {
+    final taskBox = Hive.box<Task>('tasks');
+    final categoryBox = Hive.box<Category>('categories');
+    _taskService = TaskService(taskBox);
+    _categoryService = CategoryService(categoryBox: categoryBox, taskBox: taskBox);
+    _loadData();
   }
 
-  /// 🔄 Carrega tarefas e categorias
   Future<void> _loadData() async {
     final loadedTasks = await _taskService.getAllTasks();
     final loadedCategories = await _categoryService.getAllCategories();
@@ -60,11 +57,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  /// 🔎 Pega o nome da categoria
-  String getCategoryName(int? categoryId) {
+  String getCategoryName(String? categoryId) {
     final category = categories.firstWhere(
           (cat) => cat.id == categoryId,
       orElse: () => Category(
+        id: 'uncategorized',
         name: 'Uncategorized',
         color: 0xFF9E9E9E,
         createdAt: DateTime.now(),
@@ -72,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     );
     return category.name;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +91,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-
-      drawer: const MainDrawer(), // 🚪 Drawer modularizado
-
+      drawer: const MainDrawer(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -111,7 +107,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
@@ -127,7 +122,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 🔍 Barra de busca
   Widget _buildSearchBar() {
     return TextField(
       decoration: const InputDecoration(
@@ -147,7 +141,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 🏷️ Filtros de categoria
   Widget _buildFilterChips() {
     final filters = ['All', ...categories.map((c) => c.name)];
 
@@ -159,20 +152,14 @@ class _HomePageState extends State<HomePage> {
 
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: ChoiceChip(
-              label: Text(filter),
-              selected: isSelected,
-              onSelected: (_) {
+            child: FilterChipWidget(
+              label: filter,
+              isSelected: isSelected,
+              onSelected: () {
                 setState(() {
                   selectedFilter = filter;
                 });
               },
-              selectedColor: Colors.blue,
-              backgroundColor: Colors.grey[200],
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
             ),
           );
         }).toList(),
@@ -180,7 +167,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// 📋 Lista de tarefas
   Widget _buildTaskList(List<Task> filteredTasks) {
     if (filteredTasks.isEmpty) {
       return const Center(

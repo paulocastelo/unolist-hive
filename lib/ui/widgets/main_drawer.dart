@@ -11,6 +11,7 @@ class MainDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
+          // 🔵 Cabeçalho do Drawer
           const DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.blue,
@@ -23,6 +24,8 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
           ),
+
+          // 📋 Lista de Navegação
           ListTile(
             leading: const Icon(Icons.list),
             title: const Text('Tasks'),
@@ -47,7 +50,10 @@ class MainDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/backup');
             },
           ),
+
           const Divider(),
+
+          // ℹ️ Sobre
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('About'),

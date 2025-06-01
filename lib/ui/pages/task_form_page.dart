@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:hive/hive.dart';
 
-// 📦 Imports dos models e serviços
+// 📦 Imports dos models
 import '../../models/category.dart';
 import '../../models/task.dart';
+
+// 📦 Imports dos serviços
 import '../../services/category_service.dart';
 import '../../services/task_service.dart';
-import '../../services/isar_service.dart';
 
 /// Página de criação e edição de tarefas.
 /// Permite cadastrar título, descrição, categoria, data e status da tarefa.
@@ -38,27 +40,16 @@ class _TaskFormPageState extends State<TaskFormPage> {
   void initState() {
     super.initState();
     _initializeServices();
+    _loadCategories();
   }
 
-  /// 🚀 Inicializa os serviços e carrega as categorias do banco
-  Future<void> _initializeServices() async {
-    final isar = await IsarService().db;
+  /// 🚀 Inicializa os serviços
+  void _initializeServices() {
+    final taskBox = Hive.box<Task>('tasks');
+    final categoryBox = Hive.box<Category>('categories');
 
-    _taskService = TaskService(isar);
-    _categoryService = CategoryService(isar);
-
-    await _loadCategories();
-
-    // 🧠 Se for edição, preencher os campos
-    if (widget.task != null) {
-      final task = widget.task!;
-      _titleController.text = task.title;
-      _descriptionController.text = task.description ?? '';
-      selectedCategory =
-          categories.firstWhereOrNull((c) => c.id == task.categoryId);
-      selectedDate = task.dueDate;
-      isCompleted = task.isCompleted;
-    }
+    _taskService = TaskService(taskBox);
+    _categoryService = CategoryService(categoryBox: categoryBox, taskBox: taskBox);
   }
 
   /// 🔽 Carrega categorias do banco de dados
@@ -66,6 +57,17 @@ class _TaskFormPageState extends State<TaskFormPage> {
     final loadedCategories = await _categoryService.getAllCategories();
     setState(() {
       categories = loadedCategories;
+
+      // 🧠 Se for edição, preencher os campos agora que carregou as categorias
+      if (widget.task != null) {
+        final task = widget.task!;
+        _titleController.text = task.title;
+        _descriptionController.text = task.description ?? '';
+        selectedCategory =
+            categories.firstWhereOrNull((c) => c.id == task.categoryId);
+        selectedDate = task.dueDate;
+        isCompleted = task.isCompleted;
+      }
     });
   }
 
@@ -96,7 +98,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
 
     if (widget.task == null) {
       // ➕ Criação
-      final newTask = Task.create(
+      await _taskService.addTask(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim().isEmpty
             ? null
@@ -104,9 +106,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
         dueDate: selectedDate,
         categoryId: selectedCategory?.id,
         priority: 'Média',
-      )..isCompleted = isCompleted;
-
-      await _taskService.addTask(newTask);
+      );
     } else {
       // ✏️ Edição
       final updated = widget.task!
@@ -130,8 +130,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Task'),
-        content:
-        const Text('Are you sure you want to delete this task?'),
+        content: const Text('Are you sure you want to delete this task?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
