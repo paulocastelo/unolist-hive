@@ -1,3 +1,4 @@
+
 # 📝 UnoList-Hive
 
 UnoList-Hive é um aplicativo de **lista de tarefas offline**, desenvolvido em **Flutter**, com back-end local utilizando **Hive Database**, suporte total a **backup em JSON**, restauração, e uma interface leve e funcional.
@@ -10,6 +11,7 @@ Este projeto é uma **migração** do [UnoList](https://github.com/paulocastelo/
 
 * ✅ Criar, editar, excluir e concluir tarefas.
 * ✅ Gerenciar categorias com seleção de cores.
+* ✅ **Autocriar categorias** diretamente no campo de preenchimento.
 * ✅ Aplicar filtros por categorias e busca textual.
 * ✅ Backup e restauração dos dados via arquivos JSON.
 * ✅ Backup avançado:
@@ -35,7 +37,7 @@ lib/
 ├── utils/           # Extensões e funções auxiliares
 ├── lab/             # Laboratório para testes no console
 └── main.dart        # Ponto de entrada do app
-````
+```
 
 ---
 
@@ -157,6 +159,10 @@ flutter run -t lib/lab/lab_main.dart
 
   * Nunca pode ser deletada.
   * Tarefas órfãs são automaticamente movidas para ela.
+* ✅ **Campo de categoria inteligente:**
+
+  * Sugere categorias existentes enquanto você digita.
+  * Permite criação de novas categorias ao pressionar ENTER ou clicar.
 * ✅ **Backup seguro com timestamp no nome dos arquivos**.
 * ✅ **Geração segura de IDs com UUID v4**.
 * ✅ **Código documentado, limpo e organizado.**
@@ -186,4 +192,3 @@ MIT License — [Leia aqui](./LICENSE)
 🚀 [GitHub](https://github.com/paulocastelo)
 🔗 [LinkedIn](https://www.linkedin.com/in/paulo-castelo)
 
----

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-
+import 'package:uuid/uuid.dart';
 part 'category.g.dart';
 
 @HiveType(typeId: 0)
@@ -26,12 +26,11 @@ class Category extends HiveObject {
 
   /// 🏗️ Fábrica simplificada
   factory Category.create({
-    required String id,
     required String name,
     required int color,
   }) {
     return Category(
-      id: id,
+      id: const Uuid().v4(),
       name: name,
       color: color,
       createdAt: DateTime.now(),
@@ -57,4 +56,9 @@ class Category extends HiveObject {
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
+
+  /// 🚧 Atributo temporário não salvo no Hive
+  /// Serve apenas para controle interno (não serializa)
+  // @HiveIgnore()
+  bool isNew = false;
 }

@@ -14,18 +14,18 @@ class CategoryService {
   CategoryService({required this.categoryBox, required this.taskBox});
 
   /// 🔥 Adiciona uma nova categoria, gerando ID e validando
-  Future<void> addCategory(String name, int color) async {
+  Future<Category> addCategory(String name, int color) async {
     if (name.trim().isEmpty) {
       throw Exception('O nome da categoria não pode ser vazio.');
     }
 
     final category = Category.create(
-      id: _uuid.v4(), // 👈 Gera um UUID
       name: name,
       color: color,
     );
 
     await categoryBox.put(category.id, category);
+    return category; // 👈👈 Agora retorna o Category criado!
   }
 
   /// 🔄 Atualiza uma categoria existente, com validação
@@ -84,7 +84,6 @@ class CategoryService {
     } catch (_) {
       // Se não existe, cria com UUID
       final newUncategorized = Category.create(
-        id: _uuid.v4(),
         name: 'Sem Categoria',
         color: 0xFF9E9E9E,
       );

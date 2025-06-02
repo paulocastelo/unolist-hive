@@ -29,6 +29,8 @@ class _TaskFormPageState extends State<TaskFormPage> {
   // 🧠 Controladores dos campos de texto
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _categoryFocusNode = FocusNode();
 
   // 📦 Estado dos campos do formulário
   List<Category> categories = [];
@@ -63,8 +65,10 @@ class _TaskFormPageState extends State<TaskFormPage> {
         final task = widget.task!;
         _titleController.text = task.title;
         _descriptionController.text = task.description ?? '';
-        selectedCategory =
-            categories.firstWhereOrNull((c) => c.id == task.categoryId);
+        selectedCategory = categories.firstWhereOrNull((c) => c.id == task.categoryId);
+        if (selectedCategory != null) {
+          _categoryController.text = selectedCategory!.name;
+        }
         selectedDate = task.dueDate;
         isCompleted = task.isCompleted;
       }
@@ -154,13 +158,14 @@ class _TaskFormPageState extends State<TaskFormPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _categoryController.dispose();
+    _categoryFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔵 AppBar dinâmica com botão de deletar se for edição
       appBar: AppBar(
         title: Text(widget.task == null ? 'New Task' : 'Edit Task'),
         actions: widget.task != null
@@ -172,8 +177,6 @@ class _TaskFormPageState extends State<TaskFormPage> {
         ]
             : null,
       ),
-
-      // 🏗️ Corpo da página
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -188,7 +191,6 @@ class _TaskFormPageState extends State<TaskFormPage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-
                 const SizedBox(height: 16),
 
                 // 📝 Campo Descrição
@@ -200,31 +202,125 @@ class _TaskFormPageState extends State<TaskFormPage> {
                   ),
                   maxLines: 3,
                 ),
-
                 const SizedBox(height: 16),
 
-                // 🏷️ Dropdown de Categorias
-                DropdownButtonFormField<Category>(
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(),
-                  ),
-                  value: selectedCategory,
-                  items: categories
-                      .map(
-                        (category) => DropdownMenuItem(
-                      value: category,
-                      child: Text(category.name),
-                    ),
-                  )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
+                // 🏷️ Autocomplete de Categorias
+                RawAutocomplete<Category>(
+                  textEditingController: _categoryController,
+                  focusNode: _categoryFocusNode,
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<Category>.empty();
+                    }
+                    final inputLower = textEditingValue.text.toLowerCase();
+
+                    final matches = categories.where((c) =>
+                        c.name.toLowerCase().contains(inputLower)).toList();
+
+                    if (matches.isEmpty) {
+                      return [
+                        Category(
+                          id: '',
+                          name: textEditingValue.text,
+                          color: 0,
+                          createdAt: DateTime.now(), // Necessário para Hive
+                        )
+                      ];
+                    }
+                    return matches;
+                  },
+                  displayStringForOption: (Category option) {
+                    if (option.id.isEmpty) {
+                      return '➕ Criar nova categoria: "${option.name}"';
+                    }
+                    return option.name;
+                  },
+                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    return TextFormField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        labelText: 'Category',
+                        border: OutlineInputBorder(),
+                      ),
+                      onFieldSubmitted: (value) async {
+                        // 🔍 Tenta encontrar uma categoria já existente
+                        final match = categories.firstWhereOrNull(
+                              (c) => c.name.toLowerCase() == value.toLowerCase(),
+                        );
+
+                        if (match != null) {
+                          setState(() {
+                            selectedCategory = match;
+                          });
+                        } else {
+                          // 🚀 Cria uma nova categoria se não existir
+                          final newCategory = await _categoryService.addCategory(
+                            value.trim(),
+                            Colors.primaries[categories.length % Colors.primaries.length].value,
+                          );
+
+                          setState(() {
+                            categories.add(newCategory);
+                            selectedCategory = newCategory;
+                            _categoryController.text = newCategory.name;
+                          });
+                        }
+
+                        FocusScope.of(context).unfocus(); // Fecha o teclado
+                      },
+                    );
+                  },
+                  optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<Category> onSelected, Iterable<Category> options) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: options.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            final Category option = options.elementAt(index);
+                            return ListTile(
+                              title: Text(
+                                option.id.isEmpty
+                                    ? '➕ Criar nova categoria: "${option.name}"'
+                                    : option.name,
+                              ),
+                              onTap: () => onSelected(option),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  onSelected: (Category selected) async {
+                    if (selected.id.isEmpty) {
+                      final newName = selected.name.trim();
+                      if (newName.isEmpty) return;
+
+                      final newCategory = await _categoryService.addCategory(
+                        newName,
+                        Colors.primaries[categories.length % Colors.primaries.length].value,
+                      );
+
+                      setState(() {
+                        categories.add(newCategory);
+                        selectedCategory = newCategory; // 👈 Agora sim tem o id real!
+                        _categoryController.text = newCategory.name;
+                      });
+
+                      FocusScope.of(context).unfocus();
+                    } else {
+                      setState(() {
+                        selectedCategory = selected;
+                        _categoryController.text = selected.name;
+                      });
+
+                      FocusScope.of(context).unfocus();
+                    }
                   },
                 ),
-
                 const SizedBox(height: 16),
 
                 // 📅 Campo de Data (Date Picker)
@@ -248,7 +344,6 @@ class _TaskFormPageState extends State<TaskFormPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
 
                 // ✅ Checkbox de Status
@@ -266,8 +361,6 @@ class _TaskFormPageState extends State<TaskFormPage> {
           ),
         ),
       ),
-
-      // 💾 Botão Flutuante de Salvar
       floatingActionButton: FloatingActionButton(
         onPressed: _saveTask,
         child: const Icon(Icons.save),
