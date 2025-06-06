@@ -23,6 +23,7 @@ void main() async {
 
   await Hive.openBox<Category>('categories');
   await Hive.openBox<Task>('tasks');
+  await Hive.openBox<int>('score');
 
   runApp(const UnoListApp());
 }

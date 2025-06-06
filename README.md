@@ -21,6 +21,7 @@ Este projeto é uma **migração** do [UnoList](https://github.com/paulocastelo/
   * 🔸 Por intervalo de datas.
 * ✅ Função de reset total do banco (**Truncate**).
 * ✅ Garantia de que nenhuma tarefa fique sem categoria, com a categoria fixa **"Sem Categoria"** protegida contra remoção.
+* ✅ Sistema de pontuação por tarefas concluídas.
 
 ---
 
