@@ -200,6 +200,7 @@ class _HomePageState extends State<HomePage> {
               ? '${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year}'
               : '',
           isCompleted: task.isCompleted,
+          level: task.level,
           onToggleComplete: () async {
             final wasCompleted = task.isCompleted;
             setState(() {

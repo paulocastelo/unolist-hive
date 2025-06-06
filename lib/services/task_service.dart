@@ -21,6 +21,7 @@ class TaskService {
     DateTime? dueDate,
     String? categoryId,
     String priority = 'Média',
+    int level = 1,
   }) async {
     final newTask = Task(
       id: const Uuid().v4(), // Gera um UUID
@@ -31,6 +32,7 @@ class TaskService {
       createdAt: DateTime.now(),
       isCompleted: false,
       priority: priority,
+      level: level,
     );
 
     await _box.put(newTask.id, newTask);

@@ -37,6 +37,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
   Category? selectedCategory;
   DateTime? selectedDate;
   bool isCompleted = false;
+  int level = 1;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
         }
         selectedDate = task.dueDate;
         isCompleted = task.isCompleted;
+        level = task.level;
       }
     });
   }
@@ -110,6 +112,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
         dueDate: selectedDate,
         categoryId: selectedCategory?.id,
         priority: 'Média',
+        level: level,
       );
     } else {
       // ✏️ Edição
@@ -120,7 +123,8 @@ class _TaskFormPageState extends State<TaskFormPage> {
             : _descriptionController.text.trim()
         ..categoryId = selectedCategory?.id
         ..dueDate = selectedDate
-        ..isCompleted = isCompleted;
+        ..isCompleted = isCompleted
+        ..level = level;
 
       await _taskService.updateTask(updated);
     }
@@ -190,6 +194,25 @@ class _TaskFormPageState extends State<TaskFormPage> {
                     labelText: 'Title',
                     border: OutlineInputBorder(),
                   ),
+                ),
+                const SizedBox(height: 16),
+
+                // ⭐ Nível de dificuldade
+                Row(
+                  children: List.generate(3, (index) {
+                    final star = index + 1;
+                    return IconButton(
+                      icon: Icon(
+                        star <= level ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          level = star;
+                        });
+                      },
+                    );
+                  }),
                 ),
                 const SizedBox(height: 16),
 
