@@ -6,6 +6,7 @@ import '../../models/task.dart';
 import '../../models/category.dart';
 import '../../services/task_service.dart';
 import '../../services/category_service.dart';
+import '../../services/score_service.dart';
 
 // 🧩 Imports dos widgets
 import '../widgets/main_drawer.dart';
@@ -26,9 +27,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final TaskService _taskService;
   late final CategoryService _categoryService;
+  late final ScoreService _scoreService;
 
   List<Task> tasks = [];
   List<Category> categories = [];
+  int score = 0;
 
   String selectedFilter = 'All';
   String searchQuery = '';
@@ -42,6 +45,8 @@ class _HomePageState extends State<HomePage> {
   void _initializeServices() {
     final taskBox = Hive.box<Task>('tasks');
     final categoryBox = Hive.box<Category>('categories');
+    final scoreBox = Hive.box<int>('score');
+    _scoreService = ScoreService(scoreBox);
     _taskService = TaskService(taskBox);
     _categoryService = CategoryService(categoryBox: categoryBox, taskBox: taskBox);
     _loadData();
@@ -50,10 +55,12 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadData() async {
     final loadedTasks = await _taskService.getAllTasks();
     final loadedCategories = await _categoryService.getAllCategories();
+    final currentScore = await _scoreService.getScore();
 
     setState(() {
       tasks = loadedTasks;
       categories = loadedCategories;
+      score = currentScore;
     });
   }
 
@@ -85,6 +92,10 @@ class _HomePageState extends State<HomePage> {
         title: const Text('UnoList'),
         centerTitle: true,
         actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Center(child: Text('Pontos: $score')),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
@@ -190,10 +201,18 @@ class _HomePageState extends State<HomePage> {
               : '',
           isCompleted: task.isCompleted,
           onToggleComplete: () async {
+            final wasCompleted = task.isCompleted;
             setState(() {
               task.isCompleted = !task.isCompleted;
             });
             await _taskService.updateTask(task);
+            if (!wasCompleted && task.isCompleted) {
+              await _scoreService.incrementScore();
+              final current = await _scoreService.getScore();
+              setState(() {
+                score = current;
+              });
+            }
           },
           onTap: () async {
             await Navigator.push(
