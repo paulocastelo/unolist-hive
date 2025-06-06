@@ -1,43 +1,106 @@
-# Miscellaneous
-*.class
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+build/
+.idea/
+.vscode/
+vscode/
+*.iml
+
+# Generated files
+lib/**.g.dart
+lib/**.freezed.dart
+
+# Drift (Drift usa build_runner)
+lib/**.drift.dart
+lib/**.drift.g.dart
+
+# Hive (Adapta automaticamente com build_runner, se usar TypeAdapterGenerator)
+lib/**.g.dart
+
+# Build Runner
+generated_plugin_registrant.dart
+
+# iOS
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/.symlinks
+ios/Pods
+ios/Runner.xcworkspace
+ios/DerivedData
+ios/.flutter-plugins
+ios/.flutter-plugins-dependencies
+ios/.generated
+ios/Flutter/ephemeral/
+
+# Android
+.android/
+.gradle/
+local.properties
+
+# Web
+web/.dart_tool/
+web/build/
+
+# Windows
+windows/.dart_tool/
+windows/build/
+windows/Flutter/ephemeral/
+
+# macOS
+macos/Flutter/ephemeral/
+macos/.dart_tool/
+macos/build/
+
+# Linux
+linux/.dart_tool/
+linux/build/
+
+# Other
+pubspec.lock
 *.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+*.tmp
+
+# Hive storage files (if stored in the app directory and not outside)
+*.hive
+*.hive.lock
+*.hive_box
 
 # IntelliJ related
-*.iml
 *.ipr
 *.iws
-.idea/
+*.idea/
 
 # VSCode related
 .vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-**/build/   # <-- Aqui o ajuste!
+# Coverage
+coverage/
 
-# Symbolication related
-app.*.symbols
+# Personal settings
+*.env
+.env*
 
-# Obfuscation related
-app.*.map.json
+# Packages
+.packages
 
-# Android build artifacts
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Backup files
+*.bak
+*.old
+*.orig
+*.swp
+
+# Generated metadata
+.metadata
+
+# Firebase (se adicionar futuramente)
+firebase_app_id_file.json
+
+# Testing
+test/**/test_*.dart
+test/**_test.dart
+
+# Lab (manual testing scripts)
+lib/lab/
+
