@@ -28,6 +28,9 @@ class Task extends HiveObject {
   @HiveField(7)
   DateTime createdAt;
 
+  @HiveField(8)
+  int level;
+
   /// 🚀 Construtor principal
   Task({
     required this.id, // Agora é String
@@ -38,6 +41,7 @@ class Task extends HiveObject {
     this.isCompleted = false,
     required this.priority,
     required this.createdAt,
+    this.level = 1,
   });
 
   /// 🏗️ Fábrica simplificada
@@ -48,6 +52,7 @@ class Task extends HiveObject {
     DateTime? dueDate,
     String? categoryId, // Muda aqui também para String?
     String priority = 'Média',
+    int level = 1,
   }) {
     return Task(
       id: id, // Recebe id já gerado
@@ -57,6 +62,7 @@ class Task extends HiveObject {
       categoryId: categoryId,
       isCompleted: false,
       priority: priority,
+      level: level,
       createdAt: DateTime.now(),
     );
   }
@@ -72,6 +78,7 @@ class Task extends HiveObject {
       'isCompleted': isCompleted,
       'priority': priority,
       'createdAt': createdAt.toIso8601String(),
+      'level': level,
     };
   }
 
@@ -88,6 +95,7 @@ class Task extends HiveObject {
       isCompleted: json['isCompleted'] ?? false,
       priority: json['priority'] ?? 'Média',
       createdAt: DateTime.parse(json['createdAt']),
+      level: json['level'] ?? 1,
     );
   }
 }

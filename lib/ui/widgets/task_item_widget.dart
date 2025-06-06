@@ -6,6 +6,7 @@ class TaskItemWidget extends StatelessWidget {
   final String category;
   final String date;
   final bool isCompleted;
+  final int level;
 
   final VoidCallback onToggleComplete;
   final VoidCallback onTap;
@@ -16,6 +17,7 @@ class TaskItemWidget extends StatelessWidget {
     required this.category,
     required this.date,
     required this.isCompleted,
+    required this.level,
     required this.onToggleComplete,
     required this.onTap,
   });
@@ -76,11 +78,24 @@ class TaskItemWidget extends StatelessWidget {
 
                       const SizedBox(width: 16),
 
-                      const Icon(Icons.calendar_today, size: 16),
-                      const SizedBox(width: 4),
-                      Text(date),
-                    ],
-                  ),
+                  const Icon(Icons.calendar_today, size: 16),
+                  const SizedBox(width: 4),
+                  Text(date),
+                ],
+              ),
+
+              const SizedBox(height: 4),
+
+              Row(
+                children: List.generate(3, (index) {
+                  final star = index + 1;
+                  return Icon(
+                    star <= level ? Icons.star : Icons.star_border,
+                    size: 16,
+                    color: Colors.amber,
+                  );
+                }),
+              ),
                 ],
               ),
             ),
